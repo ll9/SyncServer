@@ -20,67 +20,6 @@ namespace SyncServer.Controllers
             _context = context;
         }
 
-        // GET: api/ProjectTables
-        [HttpGet]
-        public IEnumerable<ProjectTable> GetProjectTable()
-        {
-            return _context.ProjectTable;
-        }
-
-        // GET: api/ProjectTables/5
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetProjectTable([FromRoute] string id)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            var projectTable = await _context.ProjectTable.FindAsync(id);
-
-            if (projectTable == null)
-            {
-                return NotFound();
-            }
-
-            return Ok(projectTable);
-        }
-
-        // PUT: api/ProjectTables/5
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutProjectTable([FromRoute] string id, [FromBody] ProjectTable projectTable)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            if (id != projectTable.Name)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(projectTable).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!ProjectTableExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
-        }
-
         // POST: api/ProjectTables
         [HttpPost]
         public async Task<IActionResult> PostProjectTable([FromBody] ProjectTable projectTable)
@@ -89,33 +28,98 @@ namespace SyncServer.Controllers
             {
                 return BadRequest(ModelState);
             }
+            projectTable.RowVersion = _context.ProjectTable
+                .Select(p => p.RowVersion)
+                .DefaultIfEmpty(1)
+                .Max();
 
             _context.ProjectTable.Add(projectTable);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetProjectTable", new { id = projectTable.Name }, projectTable);
+            return CreatedAtAction("GetProjectTable", new { id = projectTable.Name }, projectTable.RowVersion);
         }
 
-        // DELETE: api/ProjectTables/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteProjectTable([FromRoute] string id)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+        //// GET: api/ProjectTables
+        //[HttpGet]
+        //public IEnumerable<ProjectTable> GetProjectTable()
+        //{
+        //    return _context.ProjectTable;
+        //}
 
-            var projectTable = await _context.ProjectTable.FindAsync(id);
-            if (projectTable == null)
-            {
-                return NotFound();
-            }
+        //// GET: api/ProjectTables/5
+        //[HttpGet("{id}")]
+        //public async Task<IActionResult> GetProjectTable([FromRoute] string id)
+        //{
+        //    if (!ModelState.IsValid)
+        //    {
+        //        return BadRequest(ModelState);
+        //    }
 
-            _context.ProjectTable.Remove(projectTable);
-            await _context.SaveChangesAsync();
+        //    var projectTable = await _context.ProjectTable.FindAsync(id);
 
-            return Ok(projectTable);
-        }
+        //    if (projectTable == null)
+        //    {
+        //        return NotFound();
+        //    }
+
+        //    return Ok(projectTable);
+        //}
+
+        //// PUT: api/ProjectTables/5
+        //[HttpPut("{id}")]
+        //public async Task<IActionResult> PutProjectTable([FromRoute] string id, [FromBody] ProjectTable projectTable)
+        //{
+        //    if (!ModelState.IsValid)
+        //    {
+        //        return BadRequest(ModelState);
+        //    }
+
+        //    if (id != projectTable.Name)
+        //    {
+        //        return BadRequest();
+        //    }
+
+        //    _context.Entry(projectTable).State = EntityState.Modified;
+
+        //    try
+        //    {
+        //        await _context.SaveChangesAsync();
+        //    }
+        //    catch (DbUpdateConcurrencyException)
+        //    {
+        //        if (!ProjectTableExists(id))
+        //        {
+        //            return NotFound();
+        //        }
+        //        else
+        //        {
+        //            throw;
+        //        }
+        //    }
+
+        //    return NoContent();
+        //}
+
+        //// DELETE: api/ProjectTables/5
+        //[HttpDelete("{id}")]
+        //public async Task<IActionResult> DeleteProjectTable([FromRoute] string id)
+        //{
+        //    if (!ModelState.IsValid)
+        //    {
+        //        return BadRequest(ModelState);
+        //    }
+
+        //    var projectTable = await _context.ProjectTable.FindAsync(id);
+        //    if (projectTable == null)
+        //    {
+        //        return NotFound();
+        //    }
+
+        //    _context.ProjectTable.Remove(projectTable);
+        //    await _context.SaveChangesAsync();
+
+        //    return Ok(projectTable);
+        //}
 
         private bool ProjectTableExists(string id)
         {
