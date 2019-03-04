@@ -28,42 +28,76 @@ namespace SyncServer.Controllers
             {
                 return BadRequest(ModelState);
             }
+
+            projectTable.SyncStatus = true;
             projectTable.RowVersion = _context.ProjectTable
                 .Select(p => p.RowVersion)
-                .DefaultIfEmpty(1)
-                .Max();
+                .DefaultIfEmpty(0)
+                .Max() + 1;
 
             _context.ProjectTable.Add(projectTable);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetProjectTable", new { id = projectTable.Name }, projectTable.RowVersion);
+            return CreatedAtAction(nameof(PostProjectTable), new { id = projectTable.Name }, projectTable.RowVersion);
         }
 
-        //// GET: api/ProjectTables
-        //[HttpGet]
-        //public IEnumerable<ProjectTable> GetProjectTable()
-        //{
-        //    return _context.ProjectTable;
-        //}
+        // PUT: api/ProjectTables/5
+        [HttpPut]
+        public async Task<IActionResult> PutProjectTable([FromBody] ProjectTable projectTable)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
 
-        //// GET: api/ProjectTables/5
-        //[HttpGet("{id}")]
-        //public async Task<IActionResult> GetProjectTable([FromRoute] string id)
-        //{
-        //    if (!ModelState.IsValid)
-        //    {
-        //        return BadRequest(ModelState);
-        //    }
+            projectTable.SyncStatus = true;
+            projectTable.RowVersion = _context.ProjectTable
+                .Select(p => p.RowVersion)
+                .DefaultIfEmpty(0)
+                .Max() + 1;
+            _context.Entry(projectTable).State = EntityState.Modified;
 
-        //    var projectTable = await _context.ProjectTable.FindAsync(id);
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!ProjectTableExists(projectTable.Name))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+            return Ok(projectTable.RowVersion);
+        }
 
-        //    if (projectTable == null)
-        //    {
-        //        return NotFound();
-        //    }
+        // GET: api/ProjectTables
+        [HttpGet]
+        public IEnumerable<ProjectTable> GetProjectTable()
+        {
+            return _context.ProjectTable;
+        }
 
-        //    return Ok(projectTable);
-        //}
+        // GET: api/ProjectTables/5
+        [HttpGet("{lastRowVersion}")]
+        public async Task<IActionResult> GetProjectTable([FromRoute] int lastRowVersion)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var projectTable = await _context.ProjectTable
+                .Where(p => p.RowVersion > lastRowVersion)
+                .OrderBy(p => p.RowVersion)
+                .FirstOrDefaultAsync();
+
+            return Ok(projectTable);
+        }
 
         //// PUT: api/ProjectTables/5
         //[HttpPut("{id}")]
