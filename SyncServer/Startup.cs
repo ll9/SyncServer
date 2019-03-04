@@ -47,6 +47,16 @@ namespace SyncServer
 
             app.UseHttpsRedirection();
             app.UseMvc();
+            MigrateOnStartup(app, env);
+        }
+
+        public async void MigrateOnStartup(IApplicationBuilder app, IHostingEnvironment env)
+        {
+            using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
+            {
+                var context = serviceScope.ServiceProvider.GetService<SyncServerContext>();
+                context.Database.Migrate();
+            }
         }
     }
 }
