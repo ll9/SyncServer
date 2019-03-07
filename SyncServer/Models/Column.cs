@@ -18,7 +18,7 @@ namespace SyncServer.Models
         [JsonIgnore]
         public Type DataType { get; set; }
 
-        [JsonProperty(PropertyName = "RecordType")]
-        private string DataTypeString => DataType.Name;
+        [JsonProperty(PropertyName = "DataType")]
+        private string DataTypeString => DataType.FullName;
     }
 }
