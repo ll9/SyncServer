@@ -20,6 +20,7 @@ namespace SyncServer.Models
         public DbSet<ProjectTable> ProjectTable { get; set; }
         public DbSet<SchemaDefinition> SchemaDefinitions { get; set; }
         public DbSet<Project> Projects { get; set; }
+        public DbSet<DynamicEntity> DynamicEntities { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -29,6 +30,7 @@ namespace SyncServer.Models
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfiguration(new SchemaDefinitionConfiguration());
+            modelBuilder.ApplyConfiguration(new DynamicEntityConfiguration());
             base.OnModelCreating(modelBuilder);
         }
 
@@ -40,6 +42,17 @@ namespace SyncServer.Models
                 builder.Property(e => e.Columns).HasConversion(
                     v => JsonConvert.SerializeObject(v, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }),
                     v => JsonConvert.DeserializeObject<Dictionary<string, Column>>(v, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }));
+            }
+        }
+
+        public class DynamicEntityConfiguration : IEntityTypeConfiguration<DynamicEntity>
+        {
+            public void Configure(EntityTypeBuilder<DynamicEntity> builder)
+            {
+                // This Converter will perform the conversion to and from Json to the desired type
+                builder.Property(e => e.Data).HasConversion(
+                    v => JsonConvert.SerializeObject(v, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }),
+                    v => JsonConvert.DeserializeObject<Dictionary<string, object>>(v, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }));
             }
         }
     }
