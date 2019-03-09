@@ -95,7 +95,7 @@ namespace SyncServer.Controllers
             {
                 dynamicEntity.RowVersion = newRowVersion;
 
-                if (_context.SchemaDefinitions.Any(e => e.Id == dynamicEntity.Id))
+                if (_context.DynamicEntities.Any(e => e.Id == dynamicEntity.Id))
                 {
                     _context.Entry(dynamicEntity).State = EntityState.Modified;
                 }
@@ -122,7 +122,7 @@ namespace SyncServer.Controllers
 
             await _context.SaveChangesAsync();
 
-            var changes = _context.SchemaDefinitions
+            var changes = _context.DynamicEntities
                 .Where(e => e.RowVersion > maxSync)
                 .Include(e => e.ProjectTable)
                 .ThenInclude(p => p.Project);
