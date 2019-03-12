@@ -24,39 +24,15 @@ namespace SyncServer.Migrations
 
                     b.Property<bool>("IsDeleted");
 
+                    b.Property<string>("ProjectId");
+
                     b.Property<string>("ProjectTableName");
 
                     b.Property<int>("RowVersion");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ProjectTableName");
-
                     b.ToTable("DynamicEntities");
-                });
-
-            modelBuilder.Entity("SyncServer.Models.Project", b =>
-                {
-                    b.Property<string>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Projects");
-                });
-
-            modelBuilder.Entity("SyncServer.Models.ProjectTable", b =>
-                {
-                    b.Property<string>("Name")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("ProjectId");
-
-                    b.HasKey("Name");
-
-                    b.HasIndex("ProjectId");
-
-                    b.ToTable("ProjectTable");
                 });
 
             modelBuilder.Entity("SyncServer.Models.SchemaDefinition", b =>
@@ -68,36 +44,15 @@ namespace SyncServer.Migrations
 
                     b.Property<bool>("IsDeleted");
 
+                    b.Property<string>("ProjectId");
+
                     b.Property<string>("ProjectTableName");
 
                     b.Property<int>("RowVersion");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ProjectTableName");
-
                     b.ToTable("SchemaDefinitions");
-                });
-
-            modelBuilder.Entity("SyncServer.Models.DynamicEntity", b =>
-                {
-                    b.HasOne("SyncServer.Models.ProjectTable", "ProjectTable")
-                        .WithMany()
-                        .HasForeignKey("ProjectTableName");
-                });
-
-            modelBuilder.Entity("SyncServer.Models.ProjectTable", b =>
-                {
-                    b.HasOne("SyncServer.Models.Project", "Project")
-                        .WithMany()
-                        .HasForeignKey("ProjectId");
-                });
-
-            modelBuilder.Entity("SyncServer.Models.SchemaDefinition", b =>
-                {
-                    b.HasOne("SyncServer.Models.ProjectTable", "ProjectTable")
-                        .WithMany()
-                        .HasForeignKey("ProjectTableName");
                 });
 #pragma warning restore 612, 618
         }

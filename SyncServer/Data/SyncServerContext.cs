@@ -17,9 +17,7 @@ namespace SyncServer.Models
         }
 
 
-        public DbSet<ProjectTable> ProjectTable { get; set; }
         public DbSet<SchemaDefinition> SchemaDefinitions { get; set; }
-        public DbSet<Project> Projects { get; set; }
         public DbSet<DynamicEntity> DynamicEntities { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

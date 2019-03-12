@@ -101,31 +101,14 @@ namespace SyncServer.Controllers
                 }
                 else
                 {
-                    var projTable = await _context.ProjectTable.SingleOrDefaultAsync(p => p.Name == schemaDefinition.ProjectTable.Name && p.ProjectId == schemaDefinition.ProjectTable.ProjectId);
-                    if (projTable != null)
-                    {
-                        schemaDefinition.ProjectTable = projTable;
-                    }
-                    else
-                    {
-                        var project = await _context.Projects.SingleOrDefaultAsync(p => p.Id == schemaDefinition.ProjectTable.Project.Id);
-                        if (project != null)
-                        {
-                            schemaDefinition.ProjectTable.Project = project;
-                        }
-
-                    }
                     await _context.SchemaDefinitions.AddAsync(schemaDefinition);
-                    await _context.SaveChangesAsync();
                 }
             }
 
             await _context.SaveChangesAsync();
 
             var changes = _context.SchemaDefinitions
-                .Where(e => e.RowVersion > maxSync)
-                .Include(e => e.ProjectTable)
-                .ThenInclude(p => p.Project);
+                .Where(e => e.RowVersion > maxSync);
 
             return Ok(changes);
         }

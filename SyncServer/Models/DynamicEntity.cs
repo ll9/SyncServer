@@ -13,10 +13,12 @@ namespace SyncServer.Models
         }
 
         public string Id { get; set; }
+        public Dictionary<string, object> Data { get; set; }
+
         public bool IsDeleted { get; set; }
         public int RowVersion { get; set; }
-        public Dictionary<string, object> Data { get; set; }
-        public ProjectTable ProjectTable { get; set; }
+
         public string ProjectTableName { get; set; }
+        public string ProjectId { get; set; }
     }
 }
