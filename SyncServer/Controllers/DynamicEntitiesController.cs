@@ -136,7 +136,8 @@ namespace SyncServer.Controllers
                 return NotFound();
             }
 
-            _context.DynamicEntities.Remove(dynamicEntity);
+            dynamicEntity.IsDeleted = true;
+            dynamicEntity.RowVersion = GetNewMaxRowVersion() + 1;
             await _context.SaveChangesAsync();
 
             return Ok(dynamicEntity);
